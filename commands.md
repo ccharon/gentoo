@@ -1,6 +1,8 @@
 # Wichtige Befehle die man nicht vergesssen sollte :)
 
 ## dracut (initrd bauen)
+dracut hol sich seine infos vom System. wenn man will das die Tastatur das richtige Layout hat muss man es unter /etc/vconsole.conf einstellen
+ausserdem sollten die notwendigen tools installiert sein lvm, btrfs-utils, cryptsetup sonst klappt das mounten nicht.
 
 ### initrd aktualisieren
 ```bash
