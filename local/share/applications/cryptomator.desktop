@@ -1,0 +1,14 @@
+[Desktop Entry]
+Icon=/home/christian/Programme/Cryptomator/logo.svg
+Exec=/home/christian/Programme/Cryptomator/cryptomator.AppImage
+Version=1.0
+Type=Application
+Categories=Security
+Name=Cryptomator
+StartupWMClass=java
+Terminal=false
+X-GNOME-Autostart-enabled=true
+StartupNotify=false
+X-GNOME-Autostart-Delay=10
+X-MATE-Autostart-Delay=10
+X-KDE-autostart-after=panel
