@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+Name=Visual Studio Code
+Comment=Development IDE
+Exec=/home/christian/Development/Tools/vscode/bin/code
+Icon=/home/christian/Development/Tools/vscode/resources/app/resources/linux/code.png
+Terminal=false
+StartupWMClass=code
