@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Portforwarding
+Comment=Portforwarding from mydomain.de
+Keywords=shell;prompt;command;commandline;cmd;
+Exec=gnome-terminal --geometry=60x2 --title "Forwarding Ports from mydomain.de" -- ssh -N mydomain.de
+Icon=org.gnome.Terminal
+Type=Application
+Categories=GNOME;GTK;System;TerminalEmulator;
+StartupNotify=true
+StartupWMClass=Gnome-terminal
+X-GNOME-SingleWindow=false
