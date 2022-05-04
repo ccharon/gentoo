@@ -55,8 +55,12 @@ tar cvjf /backup/home.tar.bz2 *
 ## ZFS erstellen
 
 Hier ist gemischt was mir gefällt aus der Gentoo Doku, Arch Doku und dem was ich auf einer Ubuntu 22.04 Installation sehen konnte.
+https://openzfs.github.io/openzfs-docs/Getting%20Started/Ubuntu/Ubuntu%2020.04%20Root%20on%20ZFS.html#ubuntu-installer
+https://wiki.archlinux.org/title/ZFS
+    
+    
 Es wird folgendes Layout erstellt:
-
+```
 SSD (GPT) nvme1n1
    |
    ├── nvme1n1p1 EFI(fat32) /boot/efi und bind mount /boot/efi/grub nach /boot/grub
@@ -86,7 +90,8 @@ SSD (GPT) nvme1n1
        └── USERDATA none
            ├── user /home/user
            └── root /root
-           
+```
+
 ### Platte leeren und Partitionen anlegen
 ```bash
 sgdisk --zap-all /dev/nvme1n1
@@ -101,15 +106,22 @@ sgdisk -n2:0:+64G -t2:8200 /dev/nvme1n1
 sgdisk -n3:0:+2G -t3:BE00 /dev/nvme1n1
   
 # Rest rpool
-sgdisk -n4:0:0 -t4:BF00 $DISK  
+sgdisk -n4:0:0 -t4:BF00 /dev/nvme1n1
 ```
   
-  ### EFI Partition
-  
-  ### SWAP Parition
-  
-  ### BPOOL Parititon
-  #### BPOOL
+### EFI Partition
+
+```bash
+mkfs.fat -F32 -n EFI /dev/nvme1n1p1
+```
+
+### SWAP Parition
+
+```bash
+mkswap /dev/nvme1n1p2
+```
+
+### BPOOL
   ```bash
   zpool create -d -o feature@allocation_classes=enabled \
                   -o feature@async_destroy=enabled      \
@@ -128,7 +140,7 @@ sgdisk -n4:0:0 -t4:BF00 $DISK
                   -o feature@spacemap_v2=enabled        \
                   -o feature@userobj_accounting=enabled \
                   -o feature@zpool_checkpoint=enabled   \
-                  bpool $VDEVS
+                  bpool /dev/nvme1n1p3
   ```
   
   ### RPOOL Partition
