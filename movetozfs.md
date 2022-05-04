@@ -124,24 +124,23 @@ mkswap /dev/nvme1n1p2
 ### BPOOL
 Die Besonderheit hier ist: Grub kennt nicht alle Features die ein Z-Pool so haben kann, deswegen werden mit ```-d``` alle Features deaktiviert und dann explizit nur das aktiviert was Grub auch kann. Der Pool muss auch bpool heissen. Upgraden darf man den später auch nicht sonst kommt grub evtl. nicht klar.
 ```bash
-zpool create -d 
-    -o feature@allocation_classes=enabled \
-    -o feature@async_destroy=enabled      \
-    -o feature@bookmarks=enabled          \
-    -o feature@embedded_data=enabled      \
-    -o feature@empty_bpobj=enabled        \
-    -o feature@enabled_txg=enabled        \
+zpool create \
+    -o cachefile=/etc/zfs/zpool.cache \
+    -o ashift=12 -o autotrim=on -d \
+    -o feature@async_destroy=enabled \
+    -o feature@bookmarks=enabled \
+    -o feature@embedded_data=enabled \
+    -o feature@empty_bpobj=enabled \
+    -o feature@enabled_txg=enabled \
     -o feature@extensible_dataset=enabled \
-    -o feature@filesystem_limits=enabled  \
-    -o feature@hole_birth=enabled         \
-    -o feature@large_blocks=enabled       \
-    -o feature@lz4_compress=enabled       \
-    -o feature@project_quota=enabled      \
-    -o feature@resilver_defer=enabled     \
+    -o feature@filesystem_limits=enabled \
+    -o feature@hole_birth=enabled \
+    -o feature@large_blocks=enabled \
+    -o feature@lz4_compress=enabled \
     -o feature@spacemap_histogram=enabled \
-    -o feature@spacemap_v2=enabled        \
-    -o feature@userobj_accounting=enabled \
-    -o feature@zpool_checkpoint=enabled   \
+    -O acltype=posixacl -O canmount=off -O compression=lz4 \
+    -O devices=off -O normalization=formD -O relatime=on -O xattr=sa \
+    -O mountpoint=/boot -R /mnt \   
     bpool /dev/nvme1n1p3
 ```
   
