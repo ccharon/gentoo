@@ -4,54 +4,25 @@ Alle Schritte vom Backup der alten Installation bis zum booten des umgestellten 
 
 ## Backup
 
-livecd booten
+### alle daten sichern
+Direkt im laufenden System sichern, wenn alle Dateisysteme gemounted sind, erwischt man damit alles. später beim Restore mounted man einfach auch alle Dateisysteme und alles wird direkt richtig neu verteilt :)
+    
 
-```bash
-mkdir -p /old/efi /old/boot /old/root /old/home
+```bash    
+tar --exclude=/dev/* \
+--exclude=/proc/* \
+--exclude=/home/* \
+--exclude=/daten/* \
+--exclude=/sys/* \
+--exclude=/tmp/* \
+--exclude=/var/tmp/* \
+--exclude=/var/lock/* \
+--exclude=/var/log/* \
+--exclude=/var/run/* \
+--exclude=/lost+found \
+-cvJf /home/root.tar.xz *
 ```
-
-auf mannigfaltige art und weise die dateisysteme unter die verzeichnisse mounten,
-wenn es keine boot partition gibt, einfach auslassen.
-
-- evtl ist es hilfreich zu wissen wie man lvm volumes manuell einbindet: 
-    falls nötig
-    apt-get install lvm2
-    vgscan
-
-- dann die volume group(s) aktivieren
-    vgchange -a y <nameDerVolumeGroup>
-
-jetzt sind die volumes unter /dev/mapper/ verfügbar
-
-### EFI Partition sichern
-  
-```bash
-cd /old/efi
-tar cvjf /backup/efi.tar.bz2 *
-```
-### Boot Partition sichern
-
-```bash
-cd /old/boot
-tar cvjf /backup/boot.tar.bz2 *
-```
-### Root Partition sichern
-cd /old/root
-tar --exclude=dev/* \
---exclude=proc/* \
---exclude=sys/* \
---exclude=tmp/* \
---exclude=var/tmp/* \
---exclude=var/lock/* \
---exclude=var/log/* \
---exclude=var/run/* \
---exclude=lost+found \
--cvjf /backup/root.tar.bz2 *
-
-### Home Partition sichern
-cd /old/home
-tar cvjf /backup/home.tar.bz2 *
-
+    
 ## ZFS erstellen
 
 Hier ist gemischt was mir gefällt aus der Gentoo Doku, Arch Doku und dem was ich auf einer Ubuntu 22.04 Installation sehen konnte.
@@ -91,6 +62,7 @@ SSD (GPT) nvme1n1
            ├── user /home/user
            └── root /root
 ```
+### Live CD booten
 
 ### Platte leeren und Partitionen anlegen
 ```bash
