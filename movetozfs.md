@@ -8,8 +8,11 @@ Alle Schritte vom Backup der alten Installation bis zum booten des umgestellten 
 Direkt im laufenden System sichern, wenn alle Dateisysteme gemounted sind, erwischt man damit alles. später beim Restore mounted man einfach auch alle Dateisysteme und alles wird direkt richtig neu verteilt :)
     
 
-```bash    
-tar --exclude=/dev/* \
+```bash 
+# tar hat sich irgendwie zickig mit der Reihenfolge der Parameter und der Syntax der Excludes
+# mit bisschen probieren ging es so.
+cd / && tar -cJv \
+--exclude=/dev/* \
 --exclude=/proc/* \
 --exclude=/home/* \
 --exclude=/daten/* \
@@ -18,9 +21,11 @@ tar --exclude=/dev/* \
 --exclude=/var/tmp/* \
 --exclude=/var/lock/* \
 --exclude=/var/log/* \
+--exclude=/var/cache/distfiles/* \
 --exclude=/var/run/* \
 --exclude=/lost+found \
--cvJf /home/root.tar.xz *
+--exclude=/root.tar.xz \
+-f /root.tar.xz /*
 ```
     
 ## ZFS erstellen
