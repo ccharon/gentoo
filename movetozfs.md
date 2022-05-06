@@ -197,5 +197,5 @@ env-update
 - kernel + initrd nach /boot/efi/EFI/gentoo kopieren (am besten als kernel.efi und initrd.img) Versionen weglassen weil dann der efi boot eintrag immer gleich bleiben kann :)
 - efibootmgr sagen er soll den kernel direkt booten 
 ```bash
-efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0000 -L "Gentoo" -l "\gentoo\kernel.efi" initrd="initrd.img' --unicode "root=ZFS=rpool/ROOT/coyote"
+efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0000 -L "Gentoo" -l "\gentoo\kernel.efi" initrd='\initrd.img' --unicode "init=/usr/lib/systemd/systemd dozfs root=ZFS=rpool/root/coyote ro quiet splash loglevel=3 rd.systemd.show_status=auto rd.udev.log_level=3"
 ``` 
