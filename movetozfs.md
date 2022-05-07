@@ -111,7 +111,7 @@ zpool create \
     -o autotrim=on \
     -O acltype=posixacl 
     -O canmount=off \
-    -O compression=lz4 \
+    -O compression=zstd \
     -O aclinherit=passthrough \
     -O dnodesize=auto \
     -O normalization=formD \
@@ -177,6 +177,8 @@ tar xpvf /backup/root.tar.xz --xattrs-include='*.*' --numeric-owner
 ## System wieder flott machen
 ### chroot
 ```bash
+cp /etc/zfs/zpool.cache /mnt/etc/zfs
+
 mount --make-private --rbind /dev  /mnt/dev && mount --make-private --rbind /proc /mnt/proc && mount --make-private --rbind /run /mnt/run && mount --make-private --rbind /sys  /mnt/sys
 
 chroot /mnt /bin/bash --login
@@ -188,9 +190,14 @@ source /etc/profile
 env-update
 ```
 #### fstab anpassen
-- efi partition einbinden
-- swap partition einbinden
-- alle alten patitionen aus der fstab löschen (zfs übernimmt das mounten selbst)
+```bash
+# efi partition einbinden
+echo "UUID=`blkid -s UUID -o value /dev/nvme1n1p1`   /boot/efi  vfat  umask=0077 0  2" >> /etc/fstab
+
+# swap partition einbinden
+echo "UUID=`blkid -s UUID -o value /dev/nvme1n1p2`   none  swap  sw 0  0" >> /etc/fstab
+```
+alle alten patitionen aus der fstab löschen (zfs übernimmt das mounten selbst)
 
 #### system bootfähig machen
 - dracut konfigurieren /etc/dracut.conf.d/10-modules.conf zfs als modul hinzufügen
