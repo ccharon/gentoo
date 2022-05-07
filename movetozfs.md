@@ -190,12 +190,15 @@ env-update
 #### fstab anpassen
 - efi partition einbinden
 - swap partition einbinden
-- alle anderen patitionen aus der fstab löschen (zfs übernimmt das mounten selbst)
+- alle alten patitionen aus der fstab löschen (zfs übernimmt das mounten selbst)
 
 #### system bootfähig machen
 - dracut konfigurieren /etc/dracut.conf.d/10-modules.conf zfs als modul hinzufügen
+- ggf. altes zeugs aus der /etc/crypttab auskommentieren
 - kernel + initrd nach /boot/efi/EFI/gentoo kopieren (am besten als kernel.efi und initrd.img) Versionen weglassen weil dann der efi boot eintrag immer gleich bleiben kann :)
 - efibootmgr sagen er soll den kernel direkt booten 
 ```bash
-efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0000 -L "Gentoo" -l "\gentoo\kernel.efi" initrd='\initrd.img' --unicode "init=/usr/lib/systemd/systemd dozfs root=ZFS=rpool/root/coyote ro quiet splash loglevel=3 rd.systemd.show_status=auto rd.udev.log_level=3"
+efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0002 -L "Gentoo Debug" -l '\EFI\gentoo\kernel.efi' --unicode 'initrd=\EFI\gentoo\initrd.img dozfs root=ZFS=rpool/ROOT/coyote'
+
+efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0003 -L "Gentoo" -l '\EFI\gentoo\kernel.efi' --unicode 'initrd=\EFI\gentoo\initrd.img dozfs root=ZFS=rpool/ROOT/coyote  quiet splash loglevel=3 rd.systemd.show_status=auto rd.udev.log_level=3'
 ``` 
