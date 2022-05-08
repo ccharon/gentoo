@@ -209,3 +209,17 @@ efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0002 -L "Gentoo Debug" -l '\EFI\gentoo\ker
 
 efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0003 -L "Gentoo" -l '\EFI\gentoo\kernel.efi' --unicode 'initrd=\EFI\gentoo\initrd.img dozfs root=ZFS=rpool/ROOT/coyote  quiet splash loglevel=3 rd.systemd.show_status=auto rd.udev.log_level=3'
 ``` 
+
+
+## Nacharbeiten
+
+### regelmäßig scrub ausführen
+
+dazu ins lokale Repository das [systemd-zpool-scrub-1.1.ebuild](./systemd-zpool-scrub-1.1.ebuild) einfügen und bauen.
+
+danach kann man mit foldenden Befehlen einen wöchentlichen scrub planen
+```bash
+systemctl daemon-reload
+systemctl enable --now zpool-scrub@rpool.timer
+```
+hat man mehr als den rpool dann für die anderen pools den Befehl mit dem jeweilingen Poolnamen wiederholen
