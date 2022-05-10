@@ -215,7 +215,7 @@ efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0003 -L "Gentoo" -l '\EFI\gentoo\kernel.ef
 
 ### regelmäßig scrub ausführen
 
-dazu ins lokale Repository das [systemd-zpool-scrub-1.1.ebuild](./systemd-zpool-scrub-1.1.ebuild) einfügen und bauen.
+dazu ins lokale Repository das [systemd-zpool-scrub-1.1.ebuild](./var/db/repos/local/sys-fs/systemd-zpool-scrub/systemd-zpool-scrub-1.1.ebuild) einfügen und bauen.
 
 danach kann man mit foldenden Befehlen einen wöchentlichen scrub planen
 ```bash
@@ -223,3 +223,6 @@ systemctl daemon-reload
 systemctl enable --now zpool-scrub@rpool.timer
 ```
 hat man mehr als den rpool dann für die anderen pools den Befehl mit dem jeweilingen Poolnamen wiederholen
+
+### automatisierte snapshot mit sanoid
+dazu ins lokale Repository das [sanoid.2.1.0.ebuild](./var/db/repos/local/sys-fs/sanoid/sanoid-2.1.0.ebuild) einfügen und bauen.
