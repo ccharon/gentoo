@@ -226,3 +226,31 @@ hat man mehr als den rpool dann für die anderen pools den Befehl mit dem jeweil
 
 ### automatisierte snapshot mit sanoid
 dazu ins lokale Repository das [sanoid.2.1.0.ebuild](./var/db/repos/local/sys-fs/sanoid/sanoid-2.1.0.ebuild) einfügen und bauen.
+
+Diese Konfiguration sichert ROOT und USERDATA (rekursiv, alle datasets die unter ROOT oder USERDATA liegen bekommen snapshots)
+```
+#############################################################
+# Sample config /usr/share/doc/sanoid-2.1.0/sanoid.conf.bz2 #
+#############################################################
+
+[rpool/ROOT]
+	use_template = production
+	recursive = zfs
+
+[rpool/USERDATA]
+	use_template = production
+	recursive = zfs
+
+#############################
+# templates below this line #
+#############################
+
+[template_production]
+	frequently = 0
+	hourly = 36
+	daily = 30
+	monthly = 3
+	yearly = 0
+	autosnap = yes
+	autoprune = yes
+```
