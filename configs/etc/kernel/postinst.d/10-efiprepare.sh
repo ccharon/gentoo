@@ -26,13 +26,10 @@ if ! [ -f "${kernel_src}" ] ; then echo "File ${kernel_src} does not exist." ; e
 if ! [ -f "${initrd_src}" ] ; then echo "File ${initrd_src} does not exist." ; exit 1 ; fi
 
 # Check if EFI Partition is mounted
-if ! $(mountpoint -q "${EFI_MOUNTPOINT}"); then
-    echo "${EFI_MOUNTPOINT} has to be mounted!"
-    exit 1
-fi
+if ! $(mountpoint -q "${EFI_MOUNTPOINT}") ; then echo "${EFI_MOUNTPOINT} has to be mounted!" ; exit 1 ; fi
 
 # Check if EFI Loader Directory exists
-if ! [ -d "${EFI_LOADER_DIR}" ]; then echo "Directory ${EFI_LOADER_DIR} does not exist." ; exit 1 ; fi
+if ! [ -d "${EFI_LOADER_DIR}" ] ; then echo "Directory ${EFI_LOADER_DIR} does not exist." ; exit 1 ; fi
 
 # kernel + initrd copy destination
 kernel_dst="${EFI_LOADER_DIR}/kernel.efi"
