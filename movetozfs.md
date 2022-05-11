@@ -191,17 +191,22 @@ env-update
 ```
 #### fstab anpassen
 ```bash
+
+# zfs root wegen bug https://github.com/openzfs/zfs/issues/9461 nochmal extra in die fstab
+echo "# Dateisystem nochmal mounten workaround Bug https://github.com/openzfs/zfs/issues/9461" >> /etc/fstab
+echo "rpool/ROOT/coyote                           /          zfs    defaults   0  0" >> /etc/fstab
+
 # efi partition einbinden
 echo "UUID=`blkid -s UUID -o value /dev/nvme1n1p1`   /boot/efi  vfat  umask=0077 0  2" >> /etc/fstab
 
 # swap partition einbinden
 echo "UUID=`blkid -s UUID -o value /dev/nvme1n1p2`   none  swap  sw 0  0" >> /etc/fstab
 ```
-alle alten patitionen aus der fstab löschen (zfs übernimmt das mounten selbst)
+alle alten Partitionen aus der fstab löschen (zfs übernimmt das mounten selbst)
 
-#### system bootfähig machen
-- dracut konfigurieren /etc/dracut.conf.d/10-modules.conf zfs als modul hinzufügen
-- ggf. altes zeugs aus der /etc/crypttab auskommentieren
+#### System bootfähig machen
+- dracut konfigurieren und initramfs neu bauen /etc/dracut.conf.d/10-modules.conf zfs als modul hinzufügen
+- ggf. altes Zeugs aus der /etc/crypttab auskommentieren
 - kernel + initrd nach /boot/efi/EFI/gentoo kopieren (am besten als kernel.efi und initrd.img) Versionen weglassen weil dann der efi boot eintrag immer gleich bleiben kann :)
 - efibootmgr sagen er soll den kernel direkt booten 
 ```bash
@@ -209,13 +214,15 @@ efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0002 -L "Gentoo Debug" -l '\EFI\gentoo\ker
 
 efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0003 -L "Gentoo" -l '\EFI\gentoo\kernel.efi' --unicode 'initrd=\EFI\gentoo\initrd.img dozfs root=ZFS=rpool/ROOT/coyote  quiet splash loglevel=3 rd.systemd.show_status=auto rd.udev.log_level=3'
 ``` 
+[10-efiprepare.sh](./etc/kernel/postinst.d/10-efiprepare.sh) nach /etc/kernel/postinst.d/ kopieren und ggf. ausführbar machen 
+das Script sorgt dafür das nach jedem Kernel Build der neue Kernel + Initrd auf die EFI Partition kopiert wird.
 
 
 ## Nacharbeiten
 
-### regelmäßig scrub ausführen
+### Regelmäßig scrub ausführen
 
-dazu ins lokale Repository das [systemd-zpool-scrub-1.1.ebuild](./var/db/repos/local/sys-fs/systemd-zpool-scrub/systemd-zpool-scrub-1.1.ebuild) einfügen und bauen.
+In das lokale Repository das [systemd-zpool-scrub-1.1.ebuild](./var/db/repos/local/sys-fs/systemd-zpool-scrub/systemd-zpool-scrub-1.1.ebuild) einfügen und bauen.
 
 danach kann man mit foldenden Befehlen einen wöchentlichen scrub planen
 ```bash
@@ -224,8 +231,8 @@ systemctl enable --now zpool-scrub@rpool.timer
 ```
 hat man mehr als den rpool dann für die anderen pools den Befehl mit dem jeweilingen Poolnamen wiederholen
 
-### automatisierte snapshot mit sanoid
-dazu ins lokale Repository das [sanoid.2.1.0.ebuild](./var/db/repos/local/sys-fs/sanoid/sanoid-2.1.0.ebuild) einfügen und bauen.
+### Automatisierte Snapshots mit sanoid
+dazu in das lokale Repository das [sanoid.2.1.0.ebuild](./var/db/repos/local/sys-fs/sanoid/sanoid-2.1.0.ebuild) einfügen und bauen.
 
 Diese Konfiguration sichert ROOT und USERDATA (rekursiv, alle datasets die unter ROOT oder USERDATA liegen bekommen snapshots)
 ```
