@@ -214,9 +214,15 @@ efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0002 -L "Gentoo Debug" -l '\EFI\gentoo\ker
 
 efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0003 -L "Gentoo" -l '\EFI\gentoo\kernel.efi' --unicode 'initrd=\EFI\gentoo\initrd.img dozfs root=ZFS=rpool/ROOT/coyote  quiet splash loglevel=3 rd.systemd.show_status=auto rd.udev.log_level=3'
 ``` 
-[10-efiprepare.sh](./configs/etc/kernel/postinst.d/10-efiprepare.sh) nach /etc/kernel/postinst.d/ kopieren und ggf. ausführbar machen 
-das Script sorgt dafür das nach jedem Kernel Build der neue Kernel + Initrd auf die EFI Partition kopiert wird.
 
+Das Script [efiprepare.sh](./root/bin/efiprepare.sh) runterladen und irgendwo hinlegen wo root gut rankommt.
+Dieses Script kann benutzt werden um nachdem ein neuer Kernel gebaut wurde, diesen an die richtige Stelle zu kopieren. Evtl. kurt reinschauen ob man an den Variablen was anpassen muss. Ansonsten jezt gleich und immer wenn es einen neuen Kernel gibt:
+
+(die Kernel Version angeben die verwendet werden soll)
+
+```bash
+efiprepare.sh --kver 5.17.7-gentoo-dist
+```
 
 ## Nacharbeiten
 
