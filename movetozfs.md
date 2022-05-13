@@ -205,24 +205,28 @@ echo "UUID=`blkid -s UUID -o value /dev/nvme1n1p2`   none  swap  sw 0  0" >> /et
 alle alten Partitionen aus der fstab löschen (zfs übernimmt das mounten selbst)
 
 #### System bootfähig machen
-- dracut konfigurieren und initramfs neu bauen /etc/dracut.conf.d/10-modules.conf zfs als modul hinzufügen
-- ggf. altes Zeugs aus der /etc/crypttab auskommentieren
-- kernel + initrd nach /boot/efi/EFI/gentoo kopieren (am besten als kernel.efi und initrd.img) Versionen weglassen weil dann der efi boot eintrag immer gleich bleiben kann :)
-- efibootmgr sagen er soll den kernel direkt booten 
-```bash
-efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0002 -L "Gentoo Debug" -l '\EFI\gentoo\kernel.efi' --unicode 'initrd=\EFI\gentoo\initrd.img dozfs root=ZFS=rpool/ROOT/coyote'
+1. dracut konfigurieren und initramfs neu bauen /etc/dracut.conf.d/10-modules.conf zfs als modul hinzufügen
 
-efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0003 -L "Gentoo" -l '\EFI\gentoo\kernel.efi' --unicode 'initrd=\EFI\gentoo\initrd.img dozfs root=ZFS=rpool/ROOT/coyote  quiet splash loglevel=3 rd.systemd.show_status=auto rd.udev.log_level=3'
-``` 
+2. ggf. altes Zeugs aus der /etc/crypttab auskommentieren
 
+3. kernel + initrd an die richtige Stelle kopieren
 Das Script [efiprepare.sh](./root/bin/efiprepare.sh) runterladen und irgendwo hinlegen wo root gut rankommt.
-Dieses Script kann benutzt werden um nachdem ein neuer Kernel gebaut wurde, diesen an die richtige Stelle zu kopieren. Evtl. kurt reinschauen ob man an den Variablen was anpassen muss. Ansonsten jezt gleich und immer wenn es einen neuen Kernel gibt:
+Dieses Script kann benutzt werden um nachdem ein neuer Kernel gebaut wurde, diesen an die richtige Stelle zu kopieren. Evtl. reinschauen ob man an den Variablen was anpassen muss. Ansonsten jetzt gleich und immer wenn es einen neuen Kernel gibt:
 
 (die Kernel Version angeben die verwendet werden soll)
 
 ```bash
 efiprepare.sh --kver 5.17.7-gentoo-dist
 ```
+
+4. efibootmgr sagen er soll den kernel direkt booten 
+```bash
+efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0002 -L "Gentoo Debug" -l '\EFI\gentoo\kernel.efi' --unicode 'initrd=\EFI\gentoo\initrd.img dozfs root=ZFS=rpool/ROOT/coyote'
+
+efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0003 -L "Gentoo" -l '\EFI\gentoo\kernel.efi' --unicode 'initrd=\EFI\gentoo\initrd.img dozfs root=ZFS=rpool/ROOT/coyote  quiet splash loglevel=3 rd.systemd.show_status=auto rd.udev.log_level=3'
+``` 
+
+
 
 ## Nacharbeiten
 
