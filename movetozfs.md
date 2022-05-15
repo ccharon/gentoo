@@ -46,7 +46,7 @@ SSD (GPT) nvme1n1
    |
    ├── nvme1n1p2 SWAP(swap) swap
    |
-   └── nvme1n1p3 rpool(ZPOOL)
+   └── nvme1n1p3 system(ZPOOL)
        ├── ROOT none
        |   ├── coyote /
        |   ├── coyote/srv /srv
@@ -80,11 +80,11 @@ sgdisk -n1:1M:+512M -t1:EF00 /dev/nvme1n1
 # 64G SWAP Partition
 sgdisk -n2:0:+64G -t2:8200 /dev/nvme1n1
   
-# Rest rpool
+# Rest system
 sgdisk -n3:0:0 -t3:BF00 /dev/nvme1n1
 ```
 
-Falls ein Mirror zfs gebaut wird dann Start und Endsektor der rpool partition rausfinden, fdisk und dann gucken... und dann:
+Falls ein Mirror zfs gebaut wird dann Start und Endsektor der system partition rausfinden, fdisk und dann gucken... und dann:
 ```bash
 sgdisk -n3:startsektor:endsektor -t3:BF00 /dev/nvme2n1
 ```
@@ -102,8 +102,8 @@ mkfs.fat -F32 -n EFI /dev/nvme1n1p1
 mkswap /dev/nvme1n1p2
 ```
   
-### RPOOL
-    evtl kann man hier auch ein Mirror erzeugen die letzte zeile lautet dann  rpool mirror /dev/nvme1n1p3 /dev/nvme2n1p3. Auf dem echten System sollte man auch darauf achten beim zpool die Devices am besten by-id zu nehmen. (/dev/disk/by-id/nvme-Samsung_SSD_970_EVO_1TB_SXXXXXXXXXXXXXX-part3 )
+### system
+    evtl kann man hier auch ein Mirror erzeugen die letzte zeile lautet dann  system mirror /dev/nvme1n1p3 /dev/nvme2n1p3. Auf dem echten System sollte man auch darauf achten beim zpool die Devices am besten by-id zu nehmen. (/dev/disk/by-id/nvme-Samsung_SSD_970_EVO_1TB_SXXXXXXXXXXXXXX-part3 )
 ```bash
 zpool create \
     -o cachefile=/etc/zfs/zpool.cache \
@@ -119,7 +119,7 @@ zpool create \
     -O xattr=sa \
     -O mountpoint=/ \
     -R /mnt \
-    rpool /dev/disk/by-id/nvme-Samsung_SSD_970_EVO_1TB_SXXXXXXXXXXXXXX-part3
+    system /dev/disk/by-id/nvme-Samsung_SSD_970_EVO_1TB_SXXXXXXXXXXXXXX-part3
 ```  
     
 ### Datasets in den Pools
@@ -128,26 +128,26 @@ cat << EOF > /tmp/mkdatasets.sh
 #!/bin/bash
 
 # root Dateisystem und Zeug
-zfs create -o canmount=off -o mountpoint=none rpool/ROOT
-zfs create -o mountpoint=/ rpool/ROOT/coyote
-zfs create -o mountpoint=/srv rpool/ROOT/coyote/srv
-zfs create -o mountpoint=/usr rpool/ROOT/coyote/usr
-zfs create -o mountpoint=/usr/local rpool/ROOT/coyote/usr/local
-zfs create -o mountpoint=/var rpool/ROOT/coyote/var
-zfs create -o mountpoint=/var/lib rpool/ROOT/coyote/var/lib
-zfs create -o mountpoint=/var/lib/portage rpool/ROOT/coyote/var/lib/portage
-zfs create -o mountpoint=/var/lib/AccountsService rpool/ROOT/coyote/var/lib/AccountsService
-zfs create -o mountpoint=/var/lib/libvirt rpool/ROOT/coyote/var/lib/libvirt
-zfs create -o mountpoint=/var/lib/NetworkManager rpool/ROOT/coyote/var/lib/NetworkManager
-zfs create -o mountpoint=/var/db rpool/ROOT/coyote/var/db
-zfs create -o mountpoint=/var/log rpool/ROOT/coyote/var/log
-zfs create -o mountpoint=/var/spool rpool/ROOT/coyote/var/spool
-zfs create -o mountpoint=/var/www rpool/ROOT/coyote/var/www
+zfs create -o canmount=off -o mountpoint=none system/ROOT
+zfs create -o mountpoint=/ system/ROOT/coyote
+zfs create -o mountpoint=/srv system/ROOT/coyote/srv
+zfs create -o mountpoint=/usr system/ROOT/coyote/usr
+zfs create -o mountpoint=/usr/local system/ROOT/coyote/usr/local
+zfs create -o mountpoint=/var system/ROOT/coyote/var
+zfs create -o mountpoint=/var/lib system/ROOT/coyote/var/lib
+zfs create -o mountpoint=/var/lib/portage system/ROOT/coyote/var/lib/portage
+zfs create -o mountpoint=/var/lib/AccountsService system/ROOT/coyote/var/lib/AccountsService
+zfs create -o mountpoint=/var/lib/libvirt system/ROOT/coyote/var/lib/libvirt
+zfs create -o mountpoint=/var/lib/NetworkManager system/ROOT/coyote/var/lib/NetworkManager
+zfs create -o mountpoint=/var/db system/ROOT/coyote/var/db
+zfs create -o mountpoint=/var/log system/ROOT/coyote/var/log
+zfs create -o mountpoint=/var/spool system/ROOT/coyote/var/spool
+zfs create -o mountpoint=/var/www system/ROOT/coyote/var/www
 
 # home Verzeichnisse
-zfs create -o canmount=off -o mountpoint=none rpool/USERDATA    
-zfs create -o mountpoint=/home/user rpool/USERDATA/user
-zfs create -o mountpoint=/root rpool/USERDATA/root
+zfs create -o canmount=off -o mountpoint=none system/USERDATA    
+zfs create -o mountpoint=/home/user system/USERDATA/user
+zfs create -o mountpoint=/root system/USERDATA/root
 
 EOF
 
@@ -194,7 +194,7 @@ env-update
 
 # zfs root wegen bug https://github.com/openzfs/zfs/issues/9461 nochmal extra in die fstab
 echo "# Dateisystem nochmal mounten workaround Bug https://github.com/openzfs/zfs/issues/9461" >> /etc/fstab
-echo "rpool/ROOT/coyote                           /          zfs    defaults   0  0" >> /etc/fstab
+echo "system/ROOT/coyote                           /          zfs    defaults   0  0" >> /etc/fstab
 
 # efi partition einbinden
 echo "UUID=`blkid -s UUID -o value /dev/nvme1n1p1`   /boot/efi  vfat  umask=0077 0  2" >> /etc/fstab
@@ -221,9 +221,9 @@ efiprepare.sh --kver 5.17.7-gentoo-dist
 
 4. efibootmgr sagen er soll den kernel direkt booten 
 ```bash
-efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0002 -L "Gentoo Debug" -l '\EFI\gentoo\kernel.efi' --unicode 'initrd=\EFI\gentoo\initrd.img dozfs root=ZFS=rpool/ROOT/coyote'
+efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0002 -L "Gentoo Debug" -l '\EFI\gentoo\kernel.efi' --unicode 'initrd=\EFI\gentoo\initrd.img dozfs root=ZFS=system/ROOT/coyote'
 
-efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0003 -L "Gentoo" -l '\EFI\gentoo\kernel.efi' --unicode 'initrd=\EFI\gentoo\initrd.img dozfs root=ZFS=rpool/ROOT/coyote  quiet splash loglevel=3 rd.systemd.show_status=auto rd.udev.log_level=3'
+efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0003 -L "Gentoo" -l '\EFI\gentoo\kernel.efi' --unicode 'initrd=\EFI\gentoo\initrd.img dozfs root=ZFS=system/ROOT/coyote  quiet splash loglevel=3 rd.systemd.show_status=auto rd.udev.log_level=3'
 ``` 
 
 
@@ -237,9 +237,9 @@ In das lokale Repository das [systemd-zpool-scrub-1.1.ebuild](./var/db/repos/loc
 danach kann man mit foldenden Befehlen einen wöchentlichen scrub planen
 ```bash
 systemctl daemon-reload
-systemctl enable --now zpool-scrub@rpool.timer
+systemctl enable --now zpool-scrub@system.timer
 ```
-hat man mehr als den rpool dann für die anderen pools den Befehl mit dem jeweilingen Poolnamen wiederholen
+hat man mehr als den system dann für die anderen pools den Befehl mit dem jeweilingen Poolnamen wiederholen
 
 ### Automatisierte Snapshots mit sanoid
 dazu in das lokale Repository das [sanoid.2.1.0.ebuild](./var/db/repos/local/sys-fs/sanoid/sanoid-2.1.0.ebuild) einfügen und bauen.
@@ -250,11 +250,11 @@ Diese Konfiguration sichert ROOT und USERDATA (rekursiv, alle datasets die unter
 # Sample config /usr/share/doc/sanoid-2.1.0/sanoid.conf.bz2 #
 #############################################################
 
-[rpool/ROOT]
+[system/ROOT]
 	use_template = production
 	recursive = zfs
 
-[rpool/USERDATA]
+[system/USERDATA]
 	use_template = production
 	recursive = zfs
 
