@@ -3,17 +3,21 @@
 # This script recreates the initramfs and then copies kernel and initramfs to a location for direct efi boot.
 # direct efi boot is configured by:
 
-# efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0000 -L "Gentoo" -l '\EFI\gentoo\kernel.efi' --unicode 'initrd=\EFI\gentoo\initrd.img dozfs root=ZFS=rpool/ROOT/coyote quiet splash loglevel=3 rd.systemd.show_status=auto rd.udev.log_level=3'
-# efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0002 -L "Gentoo Debug" -l '\EFI\gentoo\kernel.efi' --unicode 'initrd=\EFI\gentoo\initrd.img dozfs root=ZFS=rpool/ROOT/coyote'
-# efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0004 -L "Gentoo Previous Kernel" -l '\EFI\gentoo\kernel.old' --unicode 'initrd=\EFI\gentoo\initrd.old dozfs root=ZFS=rpool/ROOT/coyote'
+# efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0000 -L "Gentoo" -l '\EFI\gentoo\linux.efi'
+# efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0004 -L "Gentoo Previous Kernel" -l '\EFI\gentoo\linux.old'
 # efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0003 -L "EFI Shell" -l '\EFI\gentoo\shell.efi'
 
 # /usr/share/edk2-ovmf/Shell.efi aus edk2-ovmf ebuild nach /boot/efi/EFI/gentoo/shell.efi kopieren
 
 
-EFI_MOUNTPOINT="/boot/efi"
 BOOT_DIR="/boot"
+
+EFI_MOUNTPOINT="/boot/efi"
 EFI_LOADER_DIR="/boot/efi/EFI/gentoo"
+EFI_STUB="/usr/lib/systemd/boot/efi/linuxx64.efi.stub"
+
+KERNEL_CMDLINE="/etc/kernel/cmdline"
+
 
 usage() {
   command=${0##*/}
@@ -46,8 +50,18 @@ while true ; do
   esac
 done
 
+# kernel command parameters to append to image
+if ! [ -f "${KERNEL_CMDLINE}" ] ; then echo "File ${KERNEL_CMDLINE} does not exist." ; exit 1 ; fi
+
+# kernel command parameters to append to image
+if ! [ -f "${EFI_STUB}" ] ; then echo "File ${EFI_STUB} does not exist, emerge systemd with USE=\"gnuefi\"" ; exit 1 ; fi
+
 # recreate initramfs (zfs module gets build after kernel install so the initramfs is missing zfs.ko)
-dracut -f --kver "${kver}"
+echo "Executing \"dracut -f --kver ${kver}\""
+if ! $(dracut -f --kver "${kver}" > /dev/null 2>&1) ; then
+    echo "Error executing dracut, try manually executing \"dracut -f --kver ${kver}\" to see whats wrong."
+    exit 1
+fi
 
 # kernel + initrd copy source
 kernel_src="${BOOT_DIR}/vmlinuz-${kver}"
@@ -66,22 +80,21 @@ fi
 # Check if EFI Loader Directory exists
 if ! [ -d "${EFI_LOADER_DIR}" ]; then echo "Directory ${EFI_LOADER_DIR} does not exist." ; exit 1 ; fi
 
-# kernel + initrd copy destination
-kernel_dst="${EFI_LOADER_DIR}/kernel.efi"
-initrd_dst="${EFI_LOADER_DIR}/initrd.img"
+# copy destination
+linux_dst="${EFI_LOADER_DIR}/linux.efi"
 
 # If a version already exists copy to .old
-if [ -f "${kernel_dst}" ] ; then
-    echo "${kernel_dst} found, creating kernel.old"
-    cp -v "${kernel_dst}" "${EFI_LOADER_DIR}/kernel.old"
+if [ -f "${linux_dst}" ] ; then
+    echo "${linux_dst} found, creating linux.old"
+    cp -v "${linux_dst}" "${EFI_LOADER_DIR}/linux.old"
 fi
 
-if [ -f "${initrd_dst}" ] ; then
-    echo "${initrd_dst} found, creating initrd.old"
-    cp -v "${initrd_dst}" "${EFI_LOADER_DIR}/initrd.old"
-fi
+# Create new Kernel image
 
-# Copy new kernel + initrd to destination
-echo "Copy new kernel + initrd to ${EFI_LOADER_DIR}"
-cp -v "${kernel_src}" "${kernel_dst}"
-cp -v "${initrd_src}" "${initrd_dst}"
+echo "Creating linux.efi ..."
+objcopy \
+    --add-section .osrel="/usr/lib/os-release" --change-section-vma .osrel=0x20000 \
+    --add-section .cmdline="${KERNEL_CMDLINE}" --change-section-vma .cmdline=0x30000 \
+    --add-section .linux="${kernel_src}" --change-section-vma .linux=0x2000000 \
+    --add-section .initrd="${initrd_src}" --change-section-vma .initrd=0x3000000 \
+    "${EFI_STUB}" "${linux_dst}"
