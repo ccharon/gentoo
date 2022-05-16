@@ -98,3 +98,11 @@ objcopy \
     --add-section .linux="${kernel_src}" --change-section-vma .linux=0x2000000 \
     --add-section .initrd="${initrd_src}" --change-section-vma .initrd=0x3000000 \
     "${EFI_STUB}" "${linux_dst}"
+    
+# Signing the kernel if a certificate exists
+if ! [ -f /etc/efi-keys/DB.key ] ; then exit 0 ; fi
+if ! [ -f /etc/efi-keys/DB.crt ] ; then exit 0 ; fi
+
+echo "Signing kernel with /etc/efi-keys/DB.key"
+sbsign --key /etc/efi-keys/DB.key --cert /etc/efi-keys/DB.crt --output  "${EFI_LOADER_DIR}/linux-signed.efi" "${linux_dst}"
+mv "${EFI_LOADER_DIR}/linux-signed.efi" "${linux_dst}"
