@@ -19,6 +19,17 @@ There are four main EFI “variables” used to create a basic secureboot Root o
  - dbx: The dark side of the db. Inverse db. “not-good-db”. You name it. It’s the list containing all keys that are not allowed.
 
 ## Key creation
+
+before this script can run, check if app-crypt/efitools are installed, if not do so now otherwise tools like "sign-efi-sig-list" are missing
+
+```bash
+su - root
+cd /root
+mkdir keys
+cd keys
+wget https://www.rodsbooks.com/efi-bootloaders/mkkeys.sh
+```
+
 using this script
 
 <details>
