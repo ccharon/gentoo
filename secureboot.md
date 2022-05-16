@@ -18,6 +18,41 @@ There are four main EFI “variables” used to create a basic secureboot Root o
  - db: The signature databse is a list with all allowed signing certificates or criptografy hashes to allowed binaries. We will use THIS db key to sign our Linux Kernel.
  - dbx: The dark side of the db. Inverse db. “not-good-db”. You name it. It’s the list containing all keys that are not allowed.
 
+## Boot System with systemd-boot kernel efi image
+this will create an all in one kernel + initrd efi bootable image that will be signed
+
+### Get systemd Efistubs 
+```bash
+echo "sys-apps/systemd gnuefi" >> /etc/portage/package.use/systemd
+emerge -1 systemd
+```
+
+### remove efistub option from dist-kernel
+```bash
+mkdir /etc/kernel/config.d
+echo "CONFIG_EFI_STUB=n" >> /etc/kernel/config.d/10-noefistub.config
+emerge -1 gentoo-kernel
+```
+
+### create new combined kernel + initrd image
+
+TODO: Script that uses kernel version as parameter and does run dracut before merging initramfs
+
+```bash
+objcopy \
+    --add-section .osrel="/usr/lib/os-release" --change-section-vma .osrel=0x20000 \
+    --add-section .cmdline="/etc/kernel/cmdline" --change-section-vma .cmdline=0x30000 \
+    --add-section .linux="vmlinuz-5.17.7-gentoo-dist" --change-section-vma .linux=0x2000000 \
+    --add-section .initrd="initramfs-5.17.7-gentoo-dist.img" --change-section-vma .initrd=0x3000000 \
+    "/usr/lib/systemd/boot/efi/linuxx64.efi.stub" "linux.efi"
+```
+### create efi boot entry for new image
+```bash
+efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0000 -L "Gentoo" -l '\EFI\gentoo\linux.efi' 
+```
+
+
+
 ## Key creation
 
 before this script can run, check if app-crypt/efitools are installed, if not do so now otherwise tools like "sign-efi-sig-list" are missing
