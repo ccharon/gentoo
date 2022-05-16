@@ -110,3 +110,22 @@ echo "but some UEFIs require the *.auth files."
 echo ""
 ```
 </details>
+
+
+## Dual boot with windows
+To dual boot with Windows, you would need to add Microsoft's certificates to the Signature Database. Microsoft has two db certificates:
+
+    [Microsoft Windows Production PCA 2011 for Windows](./MicWinProPCA2011_2011-10-19.crt)
+    [Microsoft Corporation UEFI CA 2011 for third-party binaries like UEFI drivers, option ROMs etc.](./MicCorUEFCA2011_2011-06-27.crt)
+
+Create EFI Signature Lists from Microsoft's DER format certificates using Microsoft's GUID (77fa9abd-0359-4d32-bd60-28f4e78f784b) and combine them in one file for simplicity:
+
+```bash
+$ sbsiglist --owner 77fa9abd-0359-4d32-bd60-28f4e78f784b --type x509 --output MS_Win_db.esl MicWinProPCA2011_2011-10-19.crt
+$ sbsiglist --owner 77fa9abd-0359-4d32-bd60-28f4e78f784b --type x509 --output MS_UEFI_db.esl MicCorUEFCA2011_2011-06-27.crt
+$ cat MS_Win_db.esl MS_UEFI_db.esl > MS_db.esl
+```
+Sign a db update with your KEK. Use sign-efi-sig-list with option -a to add not replace a db certificate:
+```bash
+$ sign-efi-sig-list -a -g 77fa9abd-0359-4d32-bd60-28f4e78f784b -k KEK.key -c KEK.crt db MS_db.esl add_MS_db.auth
+``
