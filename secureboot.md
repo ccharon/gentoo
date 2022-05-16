@@ -19,7 +19,7 @@ There are four main EFI “variables” used to create a basic secureboot Root o
  - dbx: The dark side of the db. Inverse db. “not-good-db”. You name it. It’s the list containing all keys that are not allowed.
 
 ## Boot System with systemd-boot kernel efi image
-this will create an all in one kernel + initrd efi bootable image that will be signed
+this will create an all in one kernel + initrd efi bootable image that can be signed later on
 
 ### Get systemd Efistubs 
 ```bash
