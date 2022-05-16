@@ -1,6 +1,7 @@
 # (Work in Progress) Adding Secureboot to a System that boots via Efistub 
 
 https://nwildner.com/posts/2020-07-04-secure-your-boot-process/
+https://wiki.gentoo.org/wiki/User:Sakaki/Sakaki%27s_EFI_Install_Guide
 
 This Document will help to install my own Keys, sign the kernel (which will not be secured. ie. it will still load unsigned modules)
 also I still want to be able to boot Windows, so Microsofts keys have to be added to db.
@@ -115,8 +116,8 @@ echo ""
 ## Dual boot with windows
 To dual boot with Windows, you would need to add Microsoft's certificates to the Signature Database. Microsoft has two db certificates:
 
-[Microsoft Windows Production PCA 2011 for Windows](./MicWinProPCA2011_2011-10-19.crt)
-[Microsoft Corporation UEFI CA 2011 for third-party binaries like UEFI drivers, option ROMs etc.](./MicCorUEFCA2011_2011-06-27.crt)
+- [Microsoft Windows Production PCA 2011 for Windows](./MicWinProPCA2011_2011-10-19.crt)
+- [Microsoft Corporation UEFI CA 2011 for third-party binaries like UEFI drivers, option ROMs etc.](./MicCorUEFCA2011_2011-06-27.crt)
 
 Create EFI Signature Lists from Microsoft's DER format certificates using Microsoft's GUID (77fa9abd-0359-4d32-bd60-28f4e78f784b) and combine them in one file for simplicity:
 
