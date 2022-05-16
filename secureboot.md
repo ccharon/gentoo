@@ -27,13 +27,6 @@ echo "sys-apps/systemd gnuefi" >> /etc/portage/package.use/systemd
 emerge -1 systemd
 ```
 
-### remove efistub option from dist-kernel
-```bash
-mkdir /etc/kernel/config.d
-echo "CONFIG_EFI_STUB=n" >> /etc/kernel/config.d/10-noefistub.config
-emerge -1 gentoo-kernel
-```
-
 ### create new combined kernel + initrd image
 
 TODO: Script that uses kernel version as parameter and does run dracut before merging initramfs
