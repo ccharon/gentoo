@@ -115,8 +115,8 @@ echo ""
 ## Dual boot with windows
 To dual boot with Windows, you would need to add Microsoft's certificates to the Signature Database. Microsoft has two db certificates:
 
-    [Microsoft Windows Production PCA 2011 for Windows](./MicWinProPCA2011_2011-10-19.crt)
-    [Microsoft Corporation UEFI CA 2011 for third-party binaries like UEFI drivers, option ROMs etc.](./MicCorUEFCA2011_2011-06-27.crt)
+[Microsoft Windows Production PCA 2011 for Windows](./MicWinProPCA2011_2011-10-19.crt)
+[Microsoft Corporation UEFI CA 2011 for third-party binaries like UEFI drivers, option ROMs etc.](./MicCorUEFCA2011_2011-06-27.crt)
 
 Create EFI Signature Lists from Microsoft's DER format certificates using Microsoft's GUID (77fa9abd-0359-4d32-bd60-28f4e78f784b) and combine them in one file for simplicity:
 
