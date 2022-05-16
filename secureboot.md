@@ -158,7 +158,7 @@ sign-efi-sig-list -a -g 77fa9abd-0359-4d32-bd60-28f4e78f784b -k KEK.key -c KEK.c
 
 ```bash
 sbsign --key /etc/efi-keys/DB.key --cert /etc/efi-keys/DB.crt --output /boot/efi/EFI/gentoo/keytool-signed.efi /boot/efi/EFI/gentoo/keytool.efi
-mv sbsign /boot/efi/EFI/gentoo/keytool-signed.efi /boot/efi/EFI/gentoo/keytool.efi
+mv /boot/efi/EFI/gentoo/keytool-signed.efi /boot/efi/EFI/gentoo/keytool.efi
 ```
 
 ## installing keys
