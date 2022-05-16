@@ -53,10 +53,12 @@ before this script can run, check if app-crypt/efitools are installed, if not do
 
 ```bash
 su - root
-cd /root
-mkdir keys
-cd keys
+mkdir /etc/efi-keys
+chmod 700 /etc/efi-keys
+cd /etc/efi-keys
 wget https://www.rodsbooks.com/efi-bootloaders/mkkeys.sh
+chmod 700 mkkeys.sh
+./mkkeys.sh
 ```
 
 using this script
@@ -112,6 +114,16 @@ echo ""
 ```
 </details>
 
+### Saving old keys
+```bash
+mkdir -p /etc/efi-keys/old
+cd /etc/efi-keys/old
+ 
+efi-readvar -v PK -o old_PK.esl
+efi-readvar -v KEK -o old_KEK.esl
+efi-readvar -v db -o old_db.esl
+efi-readvar -v dbx -o old_dbx.esl 
+```
 
 ## Dual boot with windows
 To dual boot with Windows, you would need to add Microsoft's certificates to the Signature Database. Microsoft has two db certificates:
@@ -122,11 +134,18 @@ To dual boot with Windows, you would need to add Microsoft's certificates to the
 Create EFI Signature Lists from Microsoft's DER format certificates using Microsoft's GUID (77fa9abd-0359-4d32-bd60-28f4e78f784b) and combine them in one file for simplicity:
 
 ```bash
-$ sbsiglist --owner 77fa9abd-0359-4d32-bd60-28f4e78f784b --type x509 --output MS_Win_db.esl MicWinProPCA2011_2011-10-19.crt
-$ sbsiglist --owner 77fa9abd-0359-4d32-bd60-28f4e78f784b --type x509 --output MS_UEFI_db.esl MicCorUEFCA2011_2011-06-27.crt
-$ cat MS_Win_db.esl MS_UEFI_db.esl > MS_db.esl
+sbsiglist --owner 77fa9abd-0359-4d32-bd60-28f4e78f784b --type x509 --output MS_Win_db.esl MicWinProPCA2011_2011-10-19.crt
+sbsiglist --owner 77fa9abd-0359-4d32-bd60-28f4e78f784b --type x509 --output MS_UEFI_db.esl MicCorUEFCA2011_2011-06-27.crt
+cat MS_Win_db.esl MS_UEFI_db.esl > MS_db.esl
 ```
 Sign a db update with your KEK. Use sign-efi-sig-list with option -a to add not replace a db certificate:
 ```bash
-$ sign-efi-sig-list -a -g 77fa9abd-0359-4d32-bd60-28f4e78f784b -k KEK.key -c KEK.crt db MS_db.esl add_MS_db.auth
+sign-efi-sig-list -a -g 77fa9abd-0359-4d32-bd60-28f4e78f784b -k KEK.key -c KEK.crt db MS_db.esl add_MS_db.auth
 ``
+
+## installing keys
+copy keys to an usb stick
+*.esl and *.auth 
+
+
+
