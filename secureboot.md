@@ -21,30 +21,30 @@ There are four main EFI “variables” used to create a basic secureboot Root o
 ## Boot System with systemd-boot kernel efi image
 this will create an all in one kernel + initrd efi bootable image that can be signed later on
 
-### Get systemd Efistubs 
+### Get systemd Efistubs
+
 ```bash
 echo "sys-apps/systemd gnuefi" >> /etc/portage/package.use/systemd
 emerge -1 systemd
 ```
 
-### create new combined kernel + initrd image
-
-TODO: Script that uses kernel version as parameter and does run dracut before merging initramfs
+### create /etc/kernel/cmdline
 
 ```bash
-objcopy \
-    --add-section .osrel="/usr/lib/os-release" --change-section-vma .osrel=0x20000 \
-    --add-section .cmdline="/etc/kernel/cmdline" --change-section-vma .cmdline=0x30000 \
-    --add-section .linux="vmlinuz-5.17.7-gentoo-dist" --change-section-vma .linux=0x2000000 \
-    --add-section .initrd="initramfs-5.17.7-gentoo-dist.img" --change-section-vma .initrd=0x3000000 \
-    "/usr/lib/systemd/boot/efi/linuxx64.efi.stub" "linux.efi"
+echo "dozfs root=ZFS=system/ROOT/coyote quiet splash loglevel=3 rd.systemd.show_status=auto rd.udev.log_level=3" >> /etc/kernel/cmdline
 ```
+
+### create new combined kernel + initrd image
+download and run [efiprepare.sh](./root/bin/efiprepare.sh) 
+
+```bash
+efiprepare.sh --kver 5.17.7-gentoo-dist
+```
+
 ### create efi boot entry for new image
 ```bash
 efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0000 -L "Gentoo" -l '\EFI\gentoo\linux.efi' 
 ```
-
-
 
 ## Key creation
 
