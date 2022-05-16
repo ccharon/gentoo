@@ -114,6 +114,17 @@ echo ""
 ```
 </details>
 
+
+### signing linux.efi
+now that the keys are created run again:
+
+```bash
+efiprepare.sh --kver 5.17.7-gentoo-dist
+```
+
+it will detect the keys and sign the kernel
+
+
 ### Saving old keys
 ```bash
 mkdir -p /etc/efi-keys/old
