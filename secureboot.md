@@ -147,5 +147,8 @@ sign-efi-sig-list -a -g 77fa9abd-0359-4d32-bd60-28f4e78f784b -k KEK.key -c KEK.c
 copy keys to an usb stick
 *.esl and *.auth 
 
-
+Now, add your keys following this order:
+ Select the db entry, hit “Add new key”, and point to DB.esl
+ Select the kek entry, hit “Add new key” and point to KEK.esl
+ Finally, add the Platform Key(PK), select “Replace Keys” and point to PK.auth
 
