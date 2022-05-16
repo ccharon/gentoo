@@ -152,7 +152,14 @@ cat MS_Win_db.esl MS_UEFI_db.esl > MS_db.esl
 Sign a db update with your KEK. Use sign-efi-sig-list with option -a to add not replace a db certificate:
 ```bash
 sign-efi-sig-list -a -g 77fa9abd-0359-4d32-bd60-28f4e78f784b -k KEK.key -c KEK.crt db MS_db.esl add_MS_db.auth
-``
+```
+
+## signing additional efis to use them after activating secureboot
+
+```bash
+sbsign --key /etc/efi-keys/DB.key --cert /etc/efi-keys/DB.crt --output /boot/efi/EFI/gentoo/keytool-signed.efi /boot/efi/EFI/gentoo/keytool.efi
+mv sbsign /boot/efi/EFI/gentoo/keytool-signed.efi /boot/efi/EFI/gentoo/keytool.efi
+```
 
 ## installing keys
 copy keys to an usb stick
@@ -163,3 +170,11 @@ Now, add your keys following this order:
  Select the kek entry, hit “Add new key” and point to KEK.esl
  Finally, add the Platform Key(PK), select “Replace Keys” and point to PK.auth
 
+### using efitools keytool.efi
+```bash
+emerge efitools
+cp /usr/share/efitools/efi/KeyTool.efi /boot/efi/EFI/gentoo/keytool.efi
+efibootmgr -d /dev/nvme1n1 -p 1 -c -L "Keytool" -l '\EFI\gentoo\keytool.efi'
+
+
+```
