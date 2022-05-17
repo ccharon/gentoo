@@ -1,4 +1,4 @@
-# (Work in Progress) Adding Secureboot to a System that boots via Efistub 
+# Adding Secureboot to a System that boots via Efistub 
 
 https://nwildner.com/posts/2020-07-04-secure-your-boot-process/
 
@@ -21,32 +21,10 @@ There are four main EFI “variables” used to create a basic secureboot Root o
  - dbx: The dark side of the db. Inverse db. “not-good-db”. You name it. It’s the list containing all keys that are not allowed.
 
 ## Boot System with systemd-boot kernel efi image
-this will create an all in one kernel + initrd efi bootable image that can be signed later on
+this readme assumes that the kernel is set up like this:
+https://github.com/ccharon/gentoo/blob/main/movetozfs.md#system-bootf%C3%A4hig-machen
 
-### Get systemd Efistubs
-
-```bash
-echo "sys-apps/systemd gnuefi" >> /etc/portage/package.use/systemd
-emerge -1 systemd
-```
-
-### create /etc/kernel/cmdline
-
-```bash
-echo "dozfs root=ZFS=system/ROOT/coyote quiet splash loglevel=3 rd.systemd.show_status=auto rd.udev.log_level=3" >> /etc/kernel/cmdline
-```
-
-### create new combined kernel + initrd image
-download and run [unifiedkrnl.sh](./root/bin/unifiedkrnl.sh) 
-
-```bash
-unifiedkrnl.sh --kver 5.17.7-gentoo-dist
-```
-
-### create efi boot entry for new image
-```bash
-efibootmgr -d /dev/nvme1n1 -p 1 -c -b 0000 -L "Gentoo" -l '\EFI\gentoo\linux.efi' 
-```
+So you have a unified kernel image and the script unfiedkrnl.sh handles its creation and also signing if keys exist.
 
 ## Key creation
 
@@ -68,7 +46,7 @@ using this script
  <summary>key generation script</summary>
  
 ```bash
- #!/bin/bash
+#!/bin/bash
 # Copyright (c) 2015 by Roderick W. Smith
 # Licensed under the terms of the GPL v3
 
@@ -117,10 +95,10 @@ echo ""
 
 
 ### signing linux.efi
-now that the keys are created run again:
+now that the keys are created run:
 
 ```bash
-efiprepare.sh --kver 5.17.7-gentoo-dist
+unifiedkrnl.sh --kver 5.17.7-gentoo-dist
 ```
 
 it will detect the keys and sign the kernel
@@ -158,7 +136,7 @@ sign-efi-sig-list -a -g 77fa9abd-0359-4d32-bd60-28f4e78f784b -k KEK.key -c KEK.c
 ## signing additional efis to use them after activating secureboot
 
 ```bash
-sbsign --key /etc/efi-keys/DB.key --cert /etc/efi-keys/DB.crt --output /boot/efi/EFI/gentoo/keytool.efi /boot/efi/EFI/gentoo/keytool.efi
+sbsign --key /etc/efi-keys/DB.key --cert /etc/efi-keys/DB.crt --output /boot/efi/EFI/gentoo/shell.efi /boot/efi/EFI/gentoo/shell.efi
 ```
 
 ## installing keys
@@ -174,7 +152,6 @@ Now, add your keys following this order:
 ```bash
 emerge efitools
 cp /usr/share/efitools/efi/KeyTool.efi /boot/efi/EFI/gentoo/keytool.efi
+sbsign --key /etc/efi-keys/DB.key --cert /etc/efi-keys/DB.crt --output /boot/efi/EFI/gentoo/keytool.efi /boot/efi/EFI/gentoo/keytool.efi
 efibootmgr -d /dev/nvme1n1 -p 1 -c -L "Keytool" -l '\EFI\gentoo\keytool.efi'
-
-
 ```
