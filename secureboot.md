@@ -36,10 +36,10 @@ echo "dozfs root=ZFS=system/ROOT/coyote quiet splash loglevel=3 rd.systemd.show_
 ```
 
 ### create new combined kernel + initrd image
-download and run [efiprepare.sh](./root/bin/efiprepare.sh) 
+download and run [unifiedkrnl.sh](./root/bin/unifiedkrnl.sh) 
 
 ```bash
-efiprepare.sh --kver 5.17.7-gentoo-dist
+unifiedkrnl.sh --kver 5.17.7-gentoo-dist
 ```
 
 ### create efi boot entry for new image
@@ -157,8 +157,7 @@ sign-efi-sig-list -a -g 77fa9abd-0359-4d32-bd60-28f4e78f784b -k KEK.key -c KEK.c
 ## signing additional efis to use them after activating secureboot
 
 ```bash
-sbsign --key /etc/efi-keys/DB.key --cert /etc/efi-keys/DB.crt --output /boot/efi/EFI/gentoo/keytool-signed.efi /boot/efi/EFI/gentoo/keytool.efi
-mv /boot/efi/EFI/gentoo/keytool-signed.efi /boot/efi/EFI/gentoo/keytool.efi
+sbsign --key /etc/efi-keys/DB.key --cert /etc/efi-keys/DB.crt --output /boot/efi/EFI/gentoo/keytool.efi /boot/efi/EFI/gentoo/keytool.efi
 ```
 
 ## installing keys
