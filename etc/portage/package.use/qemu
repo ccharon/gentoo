@@ -1,0 +1,5 @@
+net-misc/spice-gtk usbredir
+net-dns/dnsmasq script
+app-emulation/qemu spice ssh virgl virtfs usbredir bpf lzo sdl-image io-uring
+net-libs/gnutls pkcs11 tools
+

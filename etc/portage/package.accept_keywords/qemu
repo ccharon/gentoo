@@ -1,0 +1,4 @@
+app-emulation/qemu
+app-emulation/virt-manager
+app-crypt/swtpm
+dev-libs/libtpms

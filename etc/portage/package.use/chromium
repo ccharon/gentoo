@@ -1,0 +1,3 @@
+>=net-libs/nodejs-14.17.6 inspector
+www-client/chromium widevine
+sys-libs/zlib minizip
