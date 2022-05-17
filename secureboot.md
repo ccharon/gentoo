@@ -1,6 +1,7 @@
 # (Work in Progress) Adding Secureboot to a System that boots via Efistub 
 
 https://nwildner.com/posts/2020-07-04-secure-your-boot-process/
+
 https://wiki.gentoo.org/wiki/User:Sakaki/Sakaki%27s_EFI_Install_Guide
 
 This Document will help to install my own Keys, sign the kernel (which will not be secured. ie. it will still load unsigned modules)
