@@ -209,7 +209,7 @@ alle alten Partitionen aus der fstab löschen (zfs übernimmt das mounten selbst
 
 2. ggf. altes Zeugs aus der /etc/crypttab auskommentieren
 
-3. Systemd mit gnuefi Unterstützung neu bauen (efistubs werden von efiprepare in Schritt 5 benötigt)
+3. Systemd mit gnuefi Unterstützung neu bauen (efistubs werden von unifiedkrnl.sh in Schritt 5 benötigt)
 
 ```bash
 echo "sys-apps/systemd gnuefi" >> /etc/portage/package.use/systemd
@@ -223,13 +223,13 @@ echo "dozfs root=ZFS=system/ROOT/coyote  quiet splash loglevel=3 rd.systemd.show
 ```
 
 5. kernel + initrd an die richtige Stelle kopieren
-Das Script [efiprepare.sh](./root/bin/efiprepare.sh) runterladen und irgendwo hinlegen wo root gut rankommt.
+Das Script [unifiedkrnl.sh](./root/bin/unifiedkrnl.sh) runterladen und irgendwo hinlegen wo root gut rankommt.
 Dieses Script kann benutzt werden um nachdem ein neuer Kernel gebaut wurde, diesen an die richtige Stelle zu kopieren. Evtl. reinschauen ob man an den Variablen was anpassen muss. Ansonsten jetzt gleich und immer wenn es einen neuen Kernel gibt:
 
 (die Kernel Version angeben die verwendet werden soll)
 
 ```bash
-efiprepare.sh --kver 5.17.7-gentoo-dist
+unifiedkrnl.sh --kver 5.17.7-gentoo-dist
 ```
 
 6. efibootmgr sagen er soll den kernel direkt booten 
