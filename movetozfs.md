@@ -1,4 +1,4 @@
-# Vorhandene Gentoo Installation auf ZFS umstellen.
+# Vorhandene Gentoo Installation auf ZFS umstellen. (geht auch als Neuinstallation, macht man halt kein Backup + Restore sondern legt die Strukturen an und entpackt dann eine Stage3 und macht alles wie im Handbuch, beim Kernel usw. dann das was hier steht)
 
 Alle Schritte vom Backup der alten Installation bis zum booten des umgestellten Systems
 
