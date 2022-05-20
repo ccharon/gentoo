@@ -221,7 +221,7 @@ emerge -1 systemd
 4. Kernel Parameter nach /etc/kernel/cmdline
 
 ```bash
-echo "dozfs root=ZFS=system/ROOT/coyote  quiet splash loglevel=3 rd.systemd.show_status=auto rd.udev.log_level=3" >> /etc/kernel/cmdline
+echo "dozfs root=ZFS=system/ROOT/coyote quiet splash" >> /etc/kernel/cmdline
 ```
 
 5. kernel + initrd an die richtige Stelle kopieren
