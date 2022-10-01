@@ -1,0 +1,9 @@
+function post_pkg_postinst() {
+  # wenn das zfs kernelmodul gebaut wurde ist ein guter Zeitpunkt den Kernel neu.
+  # in das UEFI Verzeichnis zu stopfen, entweder neue zfs Version oder ein module
+  # rebuild wegen eines neuen kernels
+  if test "$CATEGORY/$PN" = "sys-fs/zfs-kmod"; then
+    echo -e "\e[01;32m >>> Post-install hook: unifiedkrnl.sh -a <<<\e[00m"
+    /usr/sbin/unifiedkrnl.sh -a
+  fi
+}
