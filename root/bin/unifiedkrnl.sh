@@ -33,21 +33,23 @@ usage() {
   command=${0##*/}
   echo "Usage: ${command} -k imgdir [-l disklabel] [-o imgdir.img]";
   echo " -k, --kver        kernel version"
+  echo " -a  --auto        read kernel version from /usr/src/linux symlink"
   echo " -h  --help        shows this help"
   echo
   echo "This script creates a (signed) unified linux.efi"
   echo
   echo "Examples:"
   echo "${command} --kver 5.17.5-gentoo-dist"
+  echo "${command} --auto"
   echo "${command} without parameters displays this help"
   echo
 }
 
-# No parameters, just show usage
-if [ ${#} -lt 1 ]; then usage ; exit 0; fi
+# only one parameter can be used at a time
+if [ ${#} -ne 1 ]; then usage ; exit 0; fi
 
 # parse command line parameters
-opts=$(getopt --options k:h --long kver:,help  --name "$0" -- "$@")
+opts=$(getopt --options k:ah --long kver:,auto,help  --name "$0" -- "$@")
 if [ ${?} -ne 0 ] ; then usage ; exit 1 ; fi
 
 eval set -- "${opts}"
@@ -57,6 +59,7 @@ kver=""
 while true ; do
   case "${1}" in
     -k | --kver ) kver="${2}"; shift 2;;
+    -a | --auto ) kver="$(k=$(readlink /usr/src/linux); echo "${k:6}")"; shift 1;;
     -h | --help ) usage ; exit 0 ;;
     -- ) shift ; break;;
     *) usage ; exit 1;;
