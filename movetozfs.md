@@ -232,7 +232,7 @@ printf $(hostid | sed 's/\(..\)\(..\)\(..\)\(..\)/\\x\4\\x\3\\x\2\\x\1/') > /etc
 
 ```bash
 echo "dozfs root=ZFS=system/ROOT/coyote quiet splash" >> /etc/kernel/cmdline
-```bash
+```
 
 5. kernel + initrd an die richtige Stelle kopieren
 Das Script [unifiedkrnl.sh](./root/bin/unifiedkrnl.sh) runterladen und irgendwo hinlegen wo root gut rankommt.
