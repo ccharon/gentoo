@@ -227,21 +227,24 @@ Sonst kommt es später zu Problemen beim mounten der pools .. sowas wie die host
 ```bash
 printf $(hostid | sed 's/\(..\)\(..\)\(..\)\(..\)/\\x\4\\x\3\\x\2\\x\1/') > /etc/hostid
 ```
-
-4. Kernel Parameter nach /etc/kernel/cmdline
+4a. Kernel Parameter nach /etc/kernel/cmdline
 
 ```bash
-echo "dozfs root=ZFS=system/ROOT/coyote quiet splash" >> /etc/kernel/cmdline
+echo "root=zfs:AUTO quiet splash" >> /etc/kernel/cmdline
+```
+
+4b. root Dateisystem im Parameter bootfs im pool angeben, damit das zfs:AUTO funktioniert
+
+```bash
+zpool set bootfs=system/ROOT/coyote system
 ```
 
 5. kernel + initrd an die richtige Stelle kopieren
 Das Script [unifiedkrnl.sh](./root/bin/unifiedkrnl.sh) runterladen und irgendwo hinlegen wo root gut rankommt.
 Dieses Script kann benutzt werden um nachdem ein neuer Kernel gebaut wurde, diesen an die richtige Stelle zu kopieren. Evtl. reinschauen ob man an den Variablen was anpassen muss. Ansonsten jetzt gleich und immer wenn es einen neuen Kernel gibt:
 
-(die Kernel Version angeben die verwendet werden soll)
-
 ```bash
-unifiedkrnl.sh --kver 5.17.7-gentoo-dist
+unifiedkrnl.sh -a
 ```
 
 6. efibootmgr sagen er soll den kernel direkt booten 
