@@ -32,3 +32,15 @@ uefi_secureboot_key=/etc/efi-keys/DB.key
 # kernel command-line parameters
 kernel_cmdline="root=zfs:AUTO loglevel=3 quiet splash"
 ```
+
+## commands to keep in mind
+
+### restore boot entry
+```bash
+efibootmgr --create --disk /dev/nvme1n1 --part 1 --loader "\EFI\systemd\systemd-bootx64.efi" --label "Linux Boot Manager" --unicode
+``` 
+### update bootloader
+don't forget to sign the bootloader after updating it  (sbsign)
+```bash
+bootctl --no-variables --graceful update
+```
