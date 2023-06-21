@@ -1,7 +1,12 @@
 # Wichtige Befehle die man nicht vergesssen sollte :)
+## initrd neu bauen wenn man dist-kernel und unified kernel images verwendet
+einfach die config Phase von sys-kernel/gentoo-kernel ausführen
+```bash
+emerge --config sys-kernel/gentoo-kernel
+```
 
 ## dracut (initrd bauen)
-dracut hol sich seine infos vom System. wenn man will das die Tastatur das richtige Layout hat muss man es unter /etc/vconsole.conf einstellen
+dracut holt sich seine infos vom System. wenn man will das die Tastatur das richtige Layout hat muss man es unter /etc/vconsole.conf einstellen
 ausserdem sollten die notwendigen tools installiert sein lvm, btrfs-utils, cryptsetup sonst klappt das mounten nicht.
 plymouth ist für grafik zuständig.
 
