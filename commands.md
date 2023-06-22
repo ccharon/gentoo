@@ -4,6 +4,11 @@ einfach die config Phase von sys-kernel/gentoo-kernel ausführen
 ```bash
 emerge --config sys-kernel/gentoo-kernel
 ```
+alternativ (nimmt den Kernel der unter /usr/src/linux verlinkt ist 
+
+```bash
+kv="$(k=$(readlink /usr/src/linux); echo "${k:6}")" && /usr/bin/dracut --force --kernel-image /usr/src/linux-${kv}/arch/x86/boot/bzImage /usr/src/linux-${kv}/arch/x86/boot/initrd ${kv}
+```
 
 ## dracut (initrd bauen)
 dracut holt sich seine infos vom System. wenn man will das die Tastatur das richtige Layout hat muss man es unter /etc/vconsole.conf einstellen
