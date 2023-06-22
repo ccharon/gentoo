@@ -16,6 +16,8 @@ ausserdem sollten die notwendigen tools installiert sein lvm, btrfs-utils, crypt
 plymouth ist für grafik zuständig.
 
 ## automatisch kernel image aktualisieren nachdem zfs-kmod gebaut wurde
+Sollte man eigentlich nicht brauchen wenn man das use flag "dist-kernel" am zfs-kmod ebuild hat... nunja
+
 diese function in die /etc/portage/bashrc (falls nicht existiert anlegen), falls es die function schon gibt, den Inhalt hinzufügen
 ```bash
 function post_pkg_postinst() {
