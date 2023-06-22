@@ -15,6 +15,19 @@ dracut holt sich seine infos vom System. wenn man will das die Tastatur das rich
 ausserdem sollten die notwendigen tools installiert sein lvm, btrfs-utils, cryptsetup sonst klappt das mounten nicht.
 plymouth ist für grafik zuständig.
 
+## automatisch kernel image aktualisieren nachdem zfs-kmod gebaut wurde
+diese function in die /etc/portage/bashrc (falls nicht existiert anlegen), falls es die function schon gibt, den Inhalt hinzufügen
+```bash
+function post_pkg_postinst() {
+  if test "$CATEGORY/$PN" = "sys-fs/zfs-kmod"; then
+    echo -e "\e[01;32m >>> Post-install hook: dracut <<<\e[00m"
+    kv="$(k=$(readlink /usr/src/linux); echo "${k:6}")"
+
+    /usr/bin/dracut --force --kernel-image /usr/src/linux-${kv}/arch/x86/boot/bzImage /usr/src/linux-${kv}/arch/x86/boot/initrd ${kv}
+  fi
+}
+```
+
 ### initrd aktualisieren
 ```bash
 dracut --kver 5.10.15 --force
