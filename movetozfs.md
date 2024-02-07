@@ -129,16 +129,17 @@ zfs create -o com.sun:auto-snapshot=false system/ROOT/coyote/tmp
 chmod 1777 /mnt/tmp
 
 zfs create -o canmount=off system/ROOT/coyote/var
-zfs create system/ROOT/var/log
-zfs create system/ROOT/var/spool
+zfs create system/ROOT/coyote/var/log
+zfs create system/ROOT/coyote/var/spool
 
 zfs create -o canmount=off system/ROOT/coyote/var/lib
-zfs create system/ROOT/coyote/var/lib/libvirt
+zfs create -o com.sun:auto-snapshot=false system/ROOT/coyote/var/lib/libvirt
 zfs create system/ROOT/coyote/var/lib/docker
 
 zfs create -o canmount=off system/ROOT/coyote/var/cache
-zfs create -o system/ROOT/var/cache/distfiles
-zfs create -o com.sun:auto-snapshot=false system/ROOT/coyote/var/temp
+zfs create -o com.sun:auto-snapshot=false system/ROOT/coyote/var/cache/distfiles
+zfs create -o com.sun:auto-snapshot=false system/ROOT/coyote/var/tmp
+chmod 1777 /mnt/var/tmp
 
 zfs create -o canmount=off -o mountpoint=none system/USERDATA    
 zfs create -o mountpoint=/home/user system/USERDATA/user
