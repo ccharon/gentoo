@@ -100,12 +100,11 @@ mkswap /dev/nvme1n1p2
     evtl kann man hier auch ein Mirror erzeugen die letzte zeile lautet dann  system mirror /dev/nvme1n1p3 /dev/nvme2n1p3. Auf dem echten System sollte man auch darauf achten beim zpool die Devices am besten by-id zu nehmen. (/dev/disk/by-id/nvme-Samsung_SSD_970_EVO_1TB_SXXXXXXXXXXXXXX-part3 )
 ```bash
 zpool create \
-    -o cachefile=/etc/zfs/zpool.cache \
     -o ashift=12 \
     -o autotrim=on \
     -O acltype=posixacl 
     -O canmount=off \
-    -O compression=zstd \
+    -O compression=lz4 \
     -O aclinherit=passthrough \
     -O dnodesize=auto \
     -O normalization=formD \
@@ -123,24 +122,24 @@ cat << EOF > /tmp/mkdatasets.sh
 
 # root Dateisystem und Zeug
 zfs create -o canmount=off -o mountpoint=none system/ROOT
-zfs create -o mountpoint=/ system/ROOT/coyote
-zfs create -o mountpoint=/srv system/ROOT/coyote/srv
-zfs create -o mountpoint=/usr system/ROOT/coyote/usr
-zfs create -o mountpoint=/usr/local system/ROOT/coyote/usr/local
-zfs create -o canmount=off -o mountpoint=/var system/ROOT/coyote/var
-zfs create -o canmount=off -o mountpoint=/var/lib system/ROOT/coyote/var/lib
-zfs create -o mountpoint=/var/lib/portage system/ROOT/coyote/var/lib/portage
-zfs create -o mountpoint=/var/lib/AccountsService system/ROOT/coyote/var/lib/AccountsService
-zfs create -o mountpoint=/var/lib/libvirt system/ROOT/coyote/var/lib/libvirt
-zfs create -o mountpoint=/var/lib/NetworkManager system/ROOT/coyote/var/lib/NetworkManager
-zfs create -o mountpoint=/var/db system/ROOT/coyote/var/db
-zfs create -o mountpoint=/var/log system/ROOT/coyote/var/log
-zfs create -o mountpoint=/var/spool system/ROOT/coyote/var/spool
-zfs create -o com.sun:auto-snapshot=false system/ROOT/coyote/var/temp
-zfs create -o com.sun:auto-snapshot=false system/ROOT/coyote/var/cache
-zfs create -o mountpoint=/var/www system/ROOT/coyote/var/www
+zfs create -o canmount=noauto -o mountpoint=/ system/ROOT/coyote
+zfs mount system/ROOT/coyote
 
-# home Verzeichnisse
+zfs create -o com.sun:auto-snapshot=false system/ROOT/coyote/tmp
+chmod 1777 /mnt/tmp
+
+zfs create -o canmount=off system/ROOT/coyote/var
+zfs create system/ROOT/var/log
+zfs create system/ROOT/var/spool
+
+zfs create -o canmount=off system/ROOT/coyote/var/lib
+zfs create system/ROOT/coyote/var/lib/libvirt
+zfs create system/ROOT/coyote/var/lib/docker
+
+zfs create -o canmount=off system/ROOT/coyote/var/cache
+zfs create -o system/ROOT/var/cache/distfiles
+zfs create -o com.sun:auto-snapshot=false system/ROOT/coyote/var/temp
+
 zfs create -o canmount=off -o mountpoint=none system/USERDATA    
 zfs create -o mountpoint=/home/user system/USERDATA/user
 zfs create -o mountpoint=/root system/USERDATA/root
