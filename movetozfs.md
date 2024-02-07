@@ -51,20 +51,12 @@ SSD (GPT) nvme1n1
    └── nvme1n1p3 system(ZPOOL)
        ├── ROOT none
        |   ├── coyote /
-       |   ├── coyote/srv /srv
-       |   ├── coyote/usr /usr
-       |   ├── coyote/usr/local /usr/local
-       |   ├── coyote/var /var
-       |   ├── coyote/var/lib /var/lib
+       |   ├── coyote/tmp /tmp
+       |   ├── coyote/var/cache/distfiles /var/cache/distfiles
        |   ├── coyote/var/lib/libvirt /var/lib/libvirt
-       |   ├── coyote/var/lib/portage /var/lib/portage
-       |   ├── coyote/var/lib/AccountsService /var/lib/AccountsService
-       |   ├── coyote/var/lib/NetworkManager /var/lib/NetworkManager
-       |   ├── coyote/var/db /var/db
-       |   ├── coyote/var/log /var/log
-       |   ├── coyote/var/spool /var/spool
-       |   └── coyote/var/www /var/www
-       | 
+       |   ├── coyote/var/lib/docker /var/lib/docker
+       |   └── coyote/var/log /var/log
+       |
        └── USERDATA none
            ├── user /home/user
            └── root /root
