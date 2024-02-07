@@ -102,7 +102,7 @@ mkswap /dev/nvme1n1p2
 zpool create \
     -o ashift=12 \
     -o autotrim=on \
-    -O acltype=posixacl 
+    -O acltype=posixacl \
     -O canmount=off \
     -O compression=lz4 \
     -O aclinherit=passthrough \
