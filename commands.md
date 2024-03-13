@@ -1,4 +1,4 @@
-# Wichtige Befehle die man nicht vergesssen sollte :)
+# Wichtige Befehle die man nicht vergessen sollte :)
 ## initrd neu bauen wenn man dist-kernel und unified kernel images verwendet
 einfach die config Phase von sys-kernel/gentoo-kernel ausführen
 ```bash
@@ -55,3 +55,40 @@ systemctl start snapper-timeline.timer
 systemctl start snapper-cleanup.timer
 systemctl start snapper-boot.timer
 ```
+
+## Diskettenimages mit mformat (mtools) erstellen
+script : [mkfd.sh](https://github.com/ccharon/gentoo/blob/main/home/user/bin/mkfd.sh)
+
+|                        | 1440 KiB  |                DMF |
+|------------------------|-----------|--------------------|
+| Tracks                 |        80 |                 80 |
+| Sectors per track      |        18 |                 21 |
+| Cluster size           | 512 bytes | 1024 or 2048 bytes |
+| Root directory entries |       224 |                 16 | 
+
+### 1.44mb Image
+```bash
+mformat -t 80 -h 2 -s 18 -v "TEST" -C -i "test.img" ::
+``` 
+
+### 1.68mb DMF Image (1024 byte cluster)
+```bash
+mformat -t 80 -h 2 -s 21 -r 1 -c 2 -v "TEST" -C -i "test.img" ::
+```
+
+### 1.68mb DMF Image (2048 byte cluster)
+```bash
+mformat -t 80 -h 2 -s 21 -r 1 -c 4 -v "TEST" -C -i "test.img" ::
+``` 
+
+### Daten in das Image kopieren 
+```bash
+mcopy -v -i test.img /my/directory/* ::/
+``` 
+
+### DMF Image mit greaseweazle schreiben
+```bash
+gw write --drive A --format ibm.dmf /data/test.img
+```
+
+
